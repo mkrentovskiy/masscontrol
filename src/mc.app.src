@@ -1,0 +1,9 @@
+%% -*- erlang -*-
+{application, mc,
+ [{description, "mc"},
+  {vsn, "0.1"},
+  {modules, []},
+  {registered, []},
+  {mod, {'mc_app', []}},
+  {env, []},
+  {applications, [kernel, stdlib, crypto]}]}.
