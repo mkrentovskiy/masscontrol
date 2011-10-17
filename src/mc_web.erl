@@ -26,6 +26,28 @@ loop(Req, DocRoot) ->
         case Req:get(method) of
             Method when Method =:= 'GET'; Method =:= 'HEAD' ->
                 case Path of
+					"nodes_list" ->
+						HL = ssha_control:nodes_list_json(),
+						Req:ok({"application/json", mochijson2:encode(HL)});
+					"add_node" ->
+						Q = Req:parse_qs(),						
+						H = proplists:get_value("h_h", Q),
+						U = proplists:get_value("h_u", Q),
+						P = proplists:get_value("h_p", Q),
+						T = list_to_atom(proplists:get_value("h_t", Q)),
+						R = ssha_control:add_node(H, U, P, T),
+						Req:ok({"application/json", mochijson2:encode(R)});
+					"del_node" ->
+						Q = Req:parse_qs(),						
+						I = proplists:get_value("id", Q),
+						R = ssha_control:del_node(I),						
+						Req:ok({"application/json", mochijson2:encode(R)});
+					"send_command" ->
+						Q = Req:parse_qs(),						
+						I = proplists:get_value("id", Q),
+						C = proplists:get_value("c", Q),
+						R = ssha_control:send_command(I, C),						
+						Req:ok({"application/json", mochijson2:encode(list_to_binary(R))});
                     _ ->
                         Req:serve_file(Path, DocRoot)
                 end;

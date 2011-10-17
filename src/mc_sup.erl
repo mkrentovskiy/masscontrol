@@ -42,10 +42,10 @@ upgrade() ->
 %% @doc supervisor callback.
 init([]) ->
     Web = web_specs(mc_web, 7890),
-    Processes = [Web],
+	SSHACtrl = {ssha_control, {ssha_control, start, []}, permanent, 5000, worker, dynamic},
+    Processes = [Web, SSHACtrl],
     Strategy = {one_for_one, 10, 10},
-    {ok,
-     {Strategy, lists:flatten(Processes)}}.
+    {ok, {Strategy, lists:flatten(Processes)}}.
 
 web_specs(Mod, Port) ->
     WebConfig = [{ip, {0,0,0,0}},

@@ -12,8 +12,7 @@
 
 -record(state, {connection, prompt, prompt1, prompt2, prompt3, channel, replyto, received, command}).
 
-start() ->
-    gen_fsm:start(?MODULE, [], []).
+start() -> gen_fsm:start(?MODULE, [], []).
 
 connect(FsmRef, Host, User, Password) ->
 	gen_fsm:sync_send_event(FsmRef, {connect, Host, User, Password}, ?TIMEOUT). 

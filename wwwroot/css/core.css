@@ -6,3 +6,22 @@ body { padding-top: 40px; }
 .modal { z-index: 10002; }
 #emsg { position: absolute; margin: 40px 0 40px -450px; top: 0; left: 50%; 
 	width: 900px; z-index: 10004; text-align: center; }
+
+.p100 { width: 100%; }
+.p90 { width: 90%; }
+
+.a { cursor: pointer; color: #006; border-bottom: dotted #090 1px; padding: 1px 4px; }
+.a:hover { cursor: pointer; color: #006; border-bottom: solid #090 1px; background: #CDE4EB }
+
+div.ro { font-family: Courier, fixed; font-size: 13px; line-height: 18px; color: #030;
+	width: 90%; height: 500px; overflow: auto; display: none; 
+	padding: 10px 20px;  }
+
+/* FormCheck */
+.vchecking { background: #ccc; }
+.vwrong { background: #fcc; }
+.vright { background: #cfc; }
+.vnotice { position: absolute; width: 120px; padding: 10px 20px; z-index: 10003; 
+	color: #f00; font-size: 8pt; cursor: pointer; background: #ffc; }
+
+	

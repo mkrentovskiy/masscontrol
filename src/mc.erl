@@ -9,10 +9,8 @@
 
 ensure_started(App) ->
     case application:start(App) of
-        ok ->
-            ok;
-        {error, {already_started, App}} ->
-            ok
+        ok -> ok;
+        {error, {already_started, App}} -> ok
     end.
 
 
@@ -28,5 +26,4 @@ start() ->
 
 %% @spec stop() -> ok
 %% @doc Stop the mc server.
-stop() ->
-    application:stop(mc).
+stop() -> application:stop(mc).

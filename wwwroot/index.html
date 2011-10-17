@@ -11,61 +11,73 @@
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css" media="screen"/>
         <link href="/css/core.css" rel="stylesheet" type="text/css" media="screen"/>
         
-        <script src="/js/jquery.js" type="text/javascript"></script>
-        <script src="/js/jquery.json.js" type="text/javascript"></script>
+        <script src="/js/jquery.js" type="text/javascript"></script>        
+        <script src="/js/jquery.tmpl.js" type="text/javascript"></script>
+        <script src="/js/jquery.formcheck.js" type="text/javascript"></script>        
 
         <script src="/js/masscontrol.core.js" type="text/javascript"></script>
     </head>
 <body>
 	<div class="content">
 		<div class="container">
-			<div class="row">
-				<div class="span5 columns">					
-					<div class="alert-message block-message info">
-						<strong>Host</strong>
-						<div>Keys: <a href="#">.crt</a></div>
-						<div>Config: <a href="#">history</a>, <a href="#">current</a></div>
-						<div>Commands: <a href="#">ps ax</a></div>						
-					</div>			
+			<div class="row" id>
+				<div class="span10 columns" id="hl">					
+					&#0160;
 				</div>
-				<div class="span5 columns">					
-					<div class="alert-message block-message info">
-						<strong>Cisco</strong>
-						<div>Config: <a href="#">history</a>, <a href="#">current</a></div>
-						<div>Commands: <a href="#">reload</a></div>						
-					</div>			
-				</div>				
 				<div class="span6 columns">					
-					<form action="" class="form-stacked">
+					<form action="" id="ahf" onsubmit="return false;" class="form-stacked">
 						<fieldset>
-							<legend>Add host</legend>
+							<legend>Add node</legend>
 							<div class="clearfix">
 								<label for="h_h">Host</label>
 								<div class="input">
-									<input class="xlarge" id="h_h" name="h_h" size="30" type="text" />
+									<input class="xlarge" id="h_h" name="h_h" size="30" type="text" vmethod="pattern" vparam="string" />
 								</div>
 							</div>
 							<div class="clearfix">
-								<label for="h_l">Login</label>
+								<label for="h_u">User</label>
 								<div class="input">
-									<input class="large" id="h_l" name="h_l" size="30" type="text" />
+									<input class="large" id="h_u" name="h_u" size="30" type="text" vmethod="pattern" vparam="string" />
 								</div>
 							</div>
 							<div class="clearfix">
 								<label for="h_p">Password</label>
 								<div class="input">
-									<input class="large" id="h_p" name="h_p" size="30" type="text" />
+									<input class="large" id="h_p" name="h_p" size="30" type="text" vmethod="pattern" vparam="string" />
+								</div>
+							</div>
+							<div class="clearfix">
+								<label for="h_t">Type</label>
+								<div class="input">
+									<select id="h_t" name="h_t">
+										<option value="cisco">Cisco like config</option>
+										<option value="linux">Linux node</option>
+									</select>
 								</div>
 							</div>
 						</fieldset>
 						<div class="actions">
-							<button type="submit" class="btn primary">Add</button>
+							<button class="btn primary" onclick="$.mc.addNode();">Add</button>
 						</div>
-					</form>
-   
+					</form>   
 				</div>				
 			</div>
 		</div>
 	</div>		
+	<div class="no">
+		<div id="_t_host_cisco">					
+			<div id="i_${eid}" class="alert-message block-message info">
+				<a class="close" href="#" onclick="$.mc.delNode('${id}')">×</a>
+				<h3>${user}@${host}</h3>
+				<div><span class="a">History</span> | <span class="a">Show current</span></div>
+				<form class="form-stacked" onsubmit="return $.mc.sendCommand('${id}');">
+					<div>
+						<input class="p90" id="cli_${eid}" size="50" type="text" vmethod="pattern" vparam="string" />
+					</div>					
+				</form>
+				<div id='r_${eid}' class="ro"></div>
+			</div>			
+		</div>
+	</div>
 </body>
 </html>
