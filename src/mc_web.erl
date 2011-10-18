@@ -47,7 +47,7 @@ loop(Req, DocRoot) ->
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),						
-						Req:ok({"application/json", mochijson2:encode(list_to_binary(R))});
+						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(R))});
                     _ ->
                         Req:serve_file(Path, DocRoot)
                 end;
