@@ -69,7 +69,10 @@
 			<div id="i_${eid}" class="alert-message block-message info">
 				<a class="close" href="#" onclick="$.mc.delNode('${id}')">×</a>
 				<h3>${user}@${host}</h3>
-				<div><span class="a">History</span> | <span class="a">Show current</span></div>
+				<div class="h">
+					<span class="a" onclick="$.mc.showHideHistory('${id}');">History</span> 
+					<div id="h_${eid}" class="hist"></div>
+				</div>
 				<form class="form-stacked" onsubmit="return $.mc.sendCommand('${id}');">
 					<div>
 						<input class="p90" id="cli_${eid}" size="50" type="text" vmethod="pattern" vparam="string" />
@@ -78,6 +81,27 @@
 				<div id='r_${eid}' class="ro"></div>
 			</div>			
 		</div>
+
+		<div id="_t_history">
+			<div class="hi" ref="${command}">
+				<span class="label success pn" onclick="$.mc.exec('${id}', '${command}')">Exec</span>
+				<span class="label pn" onclick="$.mc.git('${id}', '${command}')">Git</span>
+				${scommand}
+			</div>
+		</div>
+
+		<div id="_t_host_linux">					
+			<div id="i_${eid}" class="alert-message block-message info">
+				<a class="close" href="#" onclick="$.mc.delNode('${id}')">×</a>
+				<h3>${user}@${host}</h3>
+				<form class="form-stacked" onsubmit="return $.mc.sendCommand('${id}');">
+					<div>
+						<input class="p90" id="cli_${eid}" size="50" type="text" vmethod="pattern" vparam="string" />
+					</div>					
+				</form>
+				<div id='r_${eid}' class="ro"></div>
+			</div>			
+		</div>		
 	</div>
 </body>
 </html>

@@ -31,11 +31,34 @@
 		var c = $("#cli_" + id2eid(id)).val(); 
 	
 		if(c && c.length && c.length > 0) {
+			var eid = id2eid(id);
+			var t = $("#r_" + eid).show().html("<img src='/i/load.gif' alt='Wait!' title='Wait!'/>");	
+			
+			addToHistory(id, eid, c);
+										
 			$.getJSON("/send_command", "id=" + id + "&c=" + escape(c), function(d) { 
-					$("#r_" + id2eid(id)).show().html(strip(d)); 
+					$("#r_" + eid).html(strip(d)); 
 				});
 		}	
 		return false;
+	}
+	
+	$.mc.showHideHistory = function(id) {
+		var e = "#h_" + id2eid(id);
+		if($(e).css('display', 'none')) $(e).show(); 
+		else $(e).hide(); 
+	}
+	
+	$.mc.exec = function(id, command) {
+		
+	}
+	
+	$.mc.git = function(id, command) {
+	
+	}
+	
+	function addToHistory(id, eid, command) {
+		
 	}
 	
 	
