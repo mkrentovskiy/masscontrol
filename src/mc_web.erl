@@ -83,16 +83,23 @@ loop(Req, DocRoot) ->
 get_option(Option, Options) ->
     {proplists:get_value(Option, Options), proplists:delete(Option, Options)}.
 
-add_to_git(Id, Command, Result) ->	
+add_to_git(Id, Command, Result) ->
+	SPath = mc_deps:local_path(["git"]),
+	case filelib:is_dir(SPath) of
+		false ->
+			file:make_dir(SPath),
+			Init = os:cmd("cd git; git init");
+		true -> Init = ""
+	end,
 	Path = mc_deps:local_path(["git", Id]),	
 	File = filename:join([Path, Command]),
 	case filelib:ensure_dir(Path) of
 		ok ->
 			file:make_dir(Path),
 			file:write_file(File, Result),
-			Cmd = "cd git; git add " ++ Id ++ "; git commit " ++ Id ++ " -m '`date`'",
+			Cmd = "cd git; git add " ++ Id ++ "; git commit " ++ Id ++ " -m 'Commit command result'",
 			R = os:cmd(Cmd),
-			{ok, R};
+			{ok, Init ++ "\n" ++ R};
 		E -> E 
 	end.
 
