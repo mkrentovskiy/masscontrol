@@ -48,6 +48,13 @@ loop(Req, DocRoot) ->
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),						
 						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(R))});
+					"add_to_git" ->
+						Q = Req:parse_qs(),						
+						I = proplists:get_value("id", Q),
+						C = proplists:get_value("c", Q),
+						R = ssha_control:send_command(I, C),										
+						{ok, P} = add_to_git(I, C, R),
+						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(P))});
                     _ ->
                         Req:serve_file(Path, DocRoot)
                 end;
@@ -75,6 +82,21 @@ loop(Req, DocRoot) ->
 
 get_option(Option, Options) ->
     {proplists:get_value(Option, Options), proplists:delete(Option, Options)}.
+
+add_to_git(Id, Command, Result) ->	
+	Path = mc_deps:local_path(["git", Id]),	
+	File = filename:join([Path, Command]),
+	case filelib:ensure_dir(Path) of
+		ok ->
+			file:make_dir(Path),
+			file:write_file(File, Result),
+			Cmd = "cd git; git add " ++ Id ++ "; git commit " ++ Id ++ " -m '`date`'",
+			R = os:cmd(Cmd),
+			{ok, R};
+		E -> E 
+	end.
+
+
 
 %%
 %% Tests

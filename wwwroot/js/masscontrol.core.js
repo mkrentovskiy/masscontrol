@@ -45,20 +45,38 @@
 	
 	$.mc.showHideHistory = function(id) {
 		var e = "#h_" + id2eid(id);
-		if($(e).css('display', 'none')) $(e).show(); 
+		if($(e).css('display') == 'none') $(e).show(); 
 		else $(e).hide(); 
 	}
 	
 	$.mc.exec = function(id, command) {
-		
+		var eid = id2eid(id);
+		var c = command.replace('\"', '"');
+	
+		$("#cli_" + eid).val("").val(c);
+		$.mc.sendCommand(id);			
 	}
 	
 	$.mc.git = function(id, command) {
-	
+		var eid = id2eid(id);
+		var c = escape(command.replace('\"', '"'));
+		
+		var t = $("#r_" + eid).show().html("<img src='/i/load.gif' alt='Wait!' title='Wait!'/>");	
+		$.getJSON("/add_to_git", "id=" + id + "&c=" + c, function(d) { 
+				$("#r_" + eid).html(strip(d)); 
+			});		
 	}
 	
 	function addToHistory(id, eid, command) {
+		var c = command.replace('"', '\"');
+		var sc = strip(command);
+		var d = { 'id': id, 'eid': eid, 'command': c, 'scommand': sc };		
+		var m = true;
 		
+		$("#h_" + eid + " .hi").each(function(i, v) { 
+				if($(v).attr('ref') == c) m = false; 
+			});
+		if(m) $("#h_" + eid).show().prepend($.tmpl($("#_t_history").html(), d))
 	}
 	
 	
