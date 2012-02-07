@@ -1,5 +1,7 @@
 (function($) {
-
+	
+	$('.tabs').tab();
+	
 	$.mc = function() { $.getJSON("/nodes_list", function(d) { showNodesList(d); }); }
 	
 	$.mc.addNode = function() {

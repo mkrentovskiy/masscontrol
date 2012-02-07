@@ -4,8 +4,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>MC</title>
 
-		<!--[if lt IE 9]>
-      		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     	<![endif]-->
 
         <link href="/css/bootstrap.css" rel="stylesheet" type="text/css" media="screen"/>
@@ -14,56 +14,59 @@
         <script src="/js/jquery.js" type="text/javascript"></script>        
         <script src="/js/jquery.tmpl.js" type="text/javascript"></script>
         <script src="/js/jquery.formcheck.js" type="text/javascript"></script>        
+        <script src="/js/bootstrap.js" type="text/javascript"></script>        
 
-        <script src="/js/masscontrol.core.js" type="text/javascript"></script>
+        <script src="/js/masscontrol.js" type="text/javascript"></script>
     </head>
 <body>
-	<div class="content">
-		<div class="container">
-			<div class="row" id>
-				<div class="span10 columns" id="hl">					
-					&#0160;
-				</div>
-				<div class="span6 columns">					
-					<form action="" id="ahf" onsubmit="return false;" class="form-stacked">
-						<fieldset>
-							<legend>Add node</legend>
-							<div class="clearfix">
-								<label for="h_h">Host</label>
-								<div class="input">
-									<input class="xlarge" id="h_h" name="h_h" size="30" type="text" vmethod="pattern" vparam="string" />
-								</div>
+	<div class="container">
+			<form action="#" id="ahf" onsubmit="return false;" class="well form-search">
+				<input name="u" size="10" type="text" vmethod="pattern" vparam="string" placeholder="User"/>
+				@
+				<input class="xlarge" name="h" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Host"/>
+				as
+				<input class="large" name="t" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Title" />
+				<button class="btn btn-success" onclick="$.mc.addNode();">Add</button>
+			</form>   
+	
+			<ul class="nav nav-tabs">
+				<li><a href="#home" data-toggle="tab">Home</a></li>
+				<li><a href="#profile" data-toggle="tab">Profile</a></li>
+				<li><a href="#messages" data-toggle="tab">Messages</a></li>
+				<li><a href="#ettings" data-toggle="tab">Settings</a></li>
+			</ul>
+	
+			<div class="tab-content">
+				<div class="tab-pane active" id="home">
+					<div class="row">
+						<div class="span8">
+							<div class="alert alert-info">sysinfo</div>
+							<div class="r">
+								
 							</div>
-							<div class="clearfix">
-								<label for="h_u">User</label>
-								<div class="input">
-									<input class="large" id="h_u" name="h_u" size="30" type="text" vmethod="pattern" vparam="string" />
-								</div>
-							</div>
-							<div class="clearfix">
-								<label for="h_p">Password</label>
-								<div class="input">
-									<input class="large" id="h_p" name="h_p" size="30" type="text" vmethod="pattern" vparam="string" />
-								</div>
-							</div>
-							<div class="clearfix">
-								<label for="h_t">Type</label>
-								<div class="input">
-									<select id="h_t" name="h_t">
-										<option value="cisco">Cisco like config</option>
-										<option value="linux">Linux node</option>
-									</select>
-								</div>
-							</div>
-						</fieldset>
-						<div class="actions">
-							<button class="btn primary" onclick="$.mc.addNode();">Add</button>
 						</div>
-					</form>   
-				</div>				
+						<div class="span4">
+							<div class="well">
+								<ul class="nav nav-list">
+	  								<li><a href="#"><i class="icon-repeat"></i> Reconnect</a></li>
+	  								<li class="nav-header">Configuration</li>
+	  								<li><a href="#"><i class="icon-eye-open"></i> Show file</a></li>
+	 								<li><a href="#"><i class="icon-magnet"></i> Copy file to git</a></li>
+	 								<li class="nav-header">Real-time status</li>
+	 								<li><a href="#"><i class="icon-list"></i> Processes</a></li>
+	 								<li><a href="#"><i class="icon-lock"></i> ISAKMP/IPSec</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane" id="profile">...</div>
+				<div class="tab-pane" id="messages">...</div>
+				<div class="tab-pane" id="settings">...</div>
 			</div>
 		</div>
-	</div>		
+	</div>	
+		
 	<div class="no">
 		<div id="_t_host_cisco">					
 			<div id="i_${eid}" class="alert-message block-message info">
