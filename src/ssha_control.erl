@@ -4,22 +4,22 @@
 
 -include("mc.hrl").
 
--export([start/0, add_node/4, del_node/1, nodes_list/0, nodes_list_json/0, send_command/2]).
+-export([start/0, add_node/3, del_node/1, nodes_list/0, nodes_list_json/0, send_command/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 -record(state, {nodes = [], agents = [] }).
 
 start() -> gen_server:start_link({local, ssha_control}, ?MODULE, [], []).
 
-add_node(Host, User, Password, Type) ->	
-	Node = #node{ id = User ++ "." ++ Host, host = Host, user = User, password = Password, type = Type},
+add_node(Host, User, Title) ->	
+	Node = #node{ id = User ++ "." ++ Host, host = Host, user = User, title = Title},
 	gen_server:call(ssha_control, {add_node, Node}, 60000).	
 del_node(Id) -> gen_server:call(ssha_control, {del_node, Id}).
 
 nodes_list() -> gen_server:call(ssha_control, nodes_list).
 nodes_list_json() -> 
 	NL = nodes_list(),	
-	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {type, T}]} || {node, I, H, U, _, T, _ } <- NL].
+	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {title, list_to_binary(T)}]} || {node, I, H, U, T, _ } <- NL].
 
 send_command(Id, Command) -> gen_server:call(ssha_control, {send_command, Id, Command}, 60000).
 
@@ -32,7 +32,7 @@ handle_call(nodes_list, _From, State) -> {reply, State#state.nodes, State};
 handle_call({add_node, Node}, _From, State) ->
 	try 
 		persist:add_node(Node),
-		Agent = connect(Node#node.host, Node#node.user, Node#node.password),
+		Agent = connect(Node#node.host, Node#node.user, ""),
 		NAgents = dict:store(Node#node.id, 
 							 Agent, 
 							 State#state.agents),
@@ -62,7 +62,7 @@ handle_call({send_command, Id, Command}, _From, State) ->
 				{NAgents, R} = lists:foldl(fun(I, {A, T}) ->
 						case I#node.id == Id of
 							true -> 
-								APid = connect(I#node.host, I#node.user, I#node.password),							
+								APid = connect(I#node.host, I#node.user, ""),
 								TR = T ++ send(APid, Command),
 								{ dict:store(I#node.id, APid, A), TR };
 							false -> {A, T}

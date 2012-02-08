@@ -1,7 +1,4 @@
 (function($) {
-	
-	$('.tabs').tab();
-	
 	$.mc = function() { $.getJSON("/nodes_list", function(d) { showNodesList(d); }); }
 	
 	$.mc.addNode = function() {
@@ -9,17 +6,17 @@
 		$.getJSON("/add_node", $("#ahf").serialize(), function(d) { 
 				if(d == "ok") { 
 					addNodeView({ 
-							id: $("#h_u").val() + "." + $("#h_h").val(), 
-							host: $("#h_h").val(),
-							user: $("#h_u").val(),
-							type: $("#h_t").val()							 
+							id: $("#ahf_u").val() + "." + $("#ahf_h").val(), 
+							host: $("#ahf_h").val(),
+							user: $("#ahf_u").val()
 						});
 					$("#ahf").clearForm();
 				} else {
-					alert("Error! " + d);
+					alertMe("Error!", d);
 				} 
 			});
 	};
+	
 	
 	$.mc.delNode = function(id) {
 		if(confirm("Are you sure?")) {
@@ -83,13 +80,26 @@
 	
 	
 	function showNodesList(d) {
-		$("#hl").html("");
+		$("#tabs").html("");
+		$("#pads").html("");
 		$.each(d, function(i, v) { addNodeView(v); });
-	}	
+		$('#tabs a:first').tab('show');
+	}
 	
 	function addNodeView(v) { 
-		v.eid = id2eid(v.id); 
-		$("#hl").append($.tmpl($("#_t_host_" + v.type).html(), v)); 
+		v.eid = id2eid(v.id);
+		$("#tabs").append($.tmpl($("#_t_tab").html(), v));
+		$("#pads").append($.tmpl($("#_t_pad").html(), v));
+		updateSysInfo(v, true);
+	}
+	
+	function updateSysInfo(v, n) {
+	}
+	
+	function alertMe(h, b) { 
+		$("#alert_header").html(h);
+		$("#alert_body").html(b);
+		$('#alert').modal(); 
 	}
 	
 	function id2eid(id) { return id.replace(".", "_", "g"); }

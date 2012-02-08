@@ -21,90 +21,66 @@
 <body>
 	<div class="container">
 			<form action="#" id="ahf" onsubmit="return false;" class="well form-search">
-				<input name="u" size="10" type="text" vmethod="pattern" vparam="string" placeholder="User"/>
+				<input name="u" id="ahf_u" size="10" type="text" vmethod="pattern" vparam="string" placeholder="User"/>
 				@
-				<input class="xlarge" name="h" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Host"/>
+				<input name="h" id="ahf_h" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Host"/>
 				as
-				<input class="large" name="t" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Title" />
+				<input id="ahf_t" name="t" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Title" />
 				<button class="btn btn-success" onclick="$.mc.addNode();">Add</button>
 			</form>   
-	
-			<ul class="nav nav-tabs">
-				<li><a href="#home" data-toggle="tab">Home</a></li>
-				<li><a href="#profile" data-toggle="tab">Profile</a></li>
-				<li><a href="#messages" data-toggle="tab">Messages</a></li>
-				<li><a href="#ettings" data-toggle="tab">Settings</a></li>
-			</ul>
-	
-			<div class="tab-content">
-				<div class="tab-pane active" id="home">
-					<div class="row">
-						<div class="span8">
-							<div class="alert alert-info">sysinfo</div>
-							<div class="r">
-								
-							</div>
-						</div>
-						<div class="span4">
-							<div class="well">
-								<ul class="nav nav-list">
-	  								<li><a href="#"><i class="icon-repeat"></i> Reconnect</a></li>
-	  								<li class="nav-header">Configuration</li>
-	  								<li><a href="#"><i class="icon-eye-open"></i> Show file</a></li>
-	 								<li><a href="#"><i class="icon-magnet"></i> Copy file to git</a></li>
-	 								<li class="nav-header">Real-time status</li>
-	 								<li><a href="#"><i class="icon-list"></i> Processes</a></li>
-	 								<li><a href="#"><i class="icon-lock"></i> ISAKMP/IPSec</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="tab-pane" id="profile">...</div>
-				<div class="tab-pane" id="messages">...</div>
-				<div class="tab-pane" id="settings">...</div>
-			</div>
+			<ul id="tabs" class="nav nav-tabs"></ul>
+			<div id="pads" class="tab-content"></div>
 		</div>
 	</div>	
 		
 	<div class="no">
-		<div id="_t_host_cisco">					
-			<div id="i_${eid}" class="alert-message block-message info">
-				<a class="close" href="#" onclick="$.mc.delNode('${id}')">×</a>
-				<h3>${user}@${host}</h3>
-				<div class="h">
-					<span class="a" onclick="$.mc.showHideHistory('${id}');">History</span> 
-					<div id="h_${eid}" class="hist"></div>
+		<script type="text/x-jquery-tmpl" id="_t_tab">
+			<li><a href="#${eid}" data-toggle="tab">${title}</a></li>
+		</script>
+		
+		<script type="text/x-jquery-tmpl" id="_t_pad">
+			<div class="tab-pane" id="${eid}">
+				<h2>${title}</h2>
+				<div class="row">
+					<div class="span8">
+						<div class="alert alert-info" id="sysinfo_${eid}"></div>
+						<div class="r" id="info_${eid}"></div>
+					</div>
+					<div class="span4">
+						<div class="well">
+							<ul class="nav nav-list">
+	  							<li><a href="#" onclick="$.mc.reconnect('${id}')"><i class="icon-repeat"></i> Reconnect</a></li>
+	  							<li class="nav-header">Configuration</li>
+	  							<li><input type="text" id="file_${eid}" placeholder="File path"/></li>
+	  							<li><a href="#" onclick="$.mc.showfile('${id}')"><i class="icon-eye-open"></i> Show file</a></li>
+	 							<li><a href="#" onclick="$.mc.reconnect('${id}')"><i class="icon-magnet"></i> Copy file to git</a></li>
+	  							<li class="nav-header">Command</li>
+	  							<li><input type="text" id="command_${eid}" placeholder="Command line"/></li>
+	  							<li><a href="#" onclick="$.mc.exec('${id}')"><i class="icon-cog"></i> Execute</a></li>
+	 							<li class="nav-header">Real-time status</li>
+	 							<li><a href="#" onclick="$.mc.ps('${id}')"><i class="icon-list"></i> Processes</a></li>
+	 							<li><a href="#" onclick="$.mc.shall('${id}')"><i class="icon-lock"></i> ISAKMP/IPSec</a></li>
+							</ul>
+						</div>
+						<div class="h">
+							<a class="btn btn-danger" onclick="$.mc.delete('${id}')">Delete</a>
+						</div>
+					</div>
 				</div>
-				<form class="form-stacked" onsubmit="return $.mc.sendCommand('${id}');">
-					<div>
-						<input class="p90" id="cli_${eid}" size="50" type="text" vmethod="pattern" vparam="string" />
-					</div>					
-				</form>
-				<div id='r_${eid}' class="ro"></div>
-			</div>			
-		</div>
-
-		<div id="_t_history">
-			<div class="hi" ref="${command}">
-				<span class="label success pn" onclick='$.mc.exec("${id}", "${command}")'>Exec</span>
-				<span class="label pn" onclick='$.mc.git("${id}", "${command}")'>Git</span>
-				<span>${scommand}</span>
+			</div>
+		</script>
+		
+		<div id="alert">
+			<div class="modal">
+				<div class="modal-header">
+					<a class="close" data-dismiss="modal">×</a>
+					<h3 id="alert_title">Alert</h3>
+				</div>
+				<div class="modal-body">
+					<p id="alert_text"></p>
+				</div>
 			</div>
 		</div>
-
-		<div id="_t_host_linux">					
-			<div id="i_${eid}" class="alert-message block-message info">
-				<a class="close" href="#" onclick="$.mc.delNode('${id}')">×</a>
-				<h3>${user}@${host}</h3>
-				<form class="form-stacked" onsubmit="return $.mc.sendCommand('${id}');">
-					<div>
-						<input class="p90" id="cli_${eid}" size="50" type="text" vmethod="pattern" vparam="string" />
-					</div>					
-				</form>
-				<div id='r_${eid}' class="ro"></div>
-			</div>			
-		</div>		
 	</div>
 </body>
 </html>

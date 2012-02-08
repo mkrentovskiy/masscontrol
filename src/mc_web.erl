@@ -31,11 +31,10 @@ loop(Req, DocRoot) ->
 						Req:ok({"application/json", mochijson2:encode(HL)});
 					"add_node" ->
 						Q = Req:parse_qs(),						
-						H = proplists:get_value("h_h", Q),
-						U = proplists:get_value("h_u", Q),
-						P = proplists:get_value("h_p", Q),
-						T = list_to_atom(proplists:get_value("h_t", Q)),
-						R = ssha_control:add_node(H, U, P, T),
+						H = proplists:get_value("h", Q),
+						U = proplists:get_value("u", Q),
+						T = proplists:get_value("t", Q),
+						R = ssha_control:add_node(H, U, T),
 						Req:ok({"application/json", mochijson2:encode(R)});
 					"del_node" ->
 						Q = Req:parse_qs(),						
