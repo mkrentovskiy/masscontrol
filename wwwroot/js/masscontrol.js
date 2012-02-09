@@ -18,7 +18,7 @@
 	};
 	
 	
-	$.mc.delNode = function(id) {
+	$.mc.del = function(id) {
 		if(confirm("Are you sure?")) {
 			$.getJSON("/del_node", "id=" + id, function(d) { 
 					$("#i_" + id2eid(id)).detach(); 

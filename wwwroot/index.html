@@ -53,7 +53,7 @@
 	  							<li class="nav-header">Configuration</li>
 	  							<li><input type="text" id="file_${eid}" placeholder="File path"/></li>
 	  							<li><a href="#" onclick="$.mc.showfile('${id}')"><i class="icon-eye-open"></i> Show file</a></li>
-	 							<li><a href="#" onclick="$.mc.reconnect('${id}')"><i class="icon-magnet"></i> Copy file to git</a></li>
+	 							<li><a href="#" onclick="$.mc.filetogit('${id}')"><i class="icon-magnet"></i> Copy file to git</a></li>
 	  							<li class="nav-header">Command</li>
 	  							<li><input type="text" id="command_${eid}" placeholder="Command line"/></li>
 	  							<li><a href="#" onclick="$.mc.exec('${id}')"><i class="icon-cog"></i> Execute</a></li>
@@ -63,7 +63,7 @@
 							</ul>
 						</div>
 						<div class="h">
-							<a class="btn btn-danger" onclick="$.mc.delete('${id}')">Delete</a>
+							<a class="btn btn-danger" onclick="$.mc.del('${id}')">Delete</a>
 						</div>
 					</div>
 				</div>
