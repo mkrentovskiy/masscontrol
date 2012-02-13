@@ -7,3 +7,5 @@
 .settings
 known_hosts
 git
+id_rsa
+id_rsa.pub

@@ -4,7 +4,7 @@
 
 -include("mc.hrl").
 
--export([start/0, add_node/3, del_node/1, nodes_list/0, nodes_list_json/0, send_command/2]).
+-export([start/0, add_node/3, del_node/1, reconnect/1, nodes_list/0, nodes_list_json/0, send_command/2]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 -record(state, {nodes = [], agents = [] }).
@@ -15,6 +15,7 @@ add_node(Host, User, Title) ->
 	Node = #node{ id = User ++ "." ++ Host, host = Host, user = User, title = Title},
 	gen_server:call(ssha_control, {add_node, Node}, 60000).	
 del_node(Id) -> gen_server:call(ssha_control, {del_node, Id}).
+reconnect(Id) -> gen_server:call(ssha_control, {reconnect, Id}).
 
 nodes_list() -> gen_server:call(ssha_control, nodes_list).
 nodes_list_json() -> 
@@ -22,6 +23,7 @@ nodes_list_json() ->
 	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {title, list_to_binary(T)}]} || {node, I, H, U, T, _ } <- NL].
 
 send_command(Id, Command) -> gen_server:call(ssha_control, {send_command, Id, Command}, 60000).
+
 
 init([]) -> 
 	Nodes = persist:nodes_list(),
@@ -51,6 +53,16 @@ handle_call({del_node, Id}, _From, State) ->
 	end,
 	NState = #state{ nodes = [X || X <- State#state.nodes, X#node.id /= Id], agents = NAgents },
 	{reply, ok, NState};
+
+handle_call({reconnect, Id}, _From, State) ->
+	NAgents = case dict:find(Id, State#state.agents) of
+		{ok, A} ->
+			[Node] = [X || X <- State#state.nodes, X#node.id == Id],
+			dict:update(Id, fun(Old) -> close(Old), connect(Node#node.host, Node#node.user, "") end, State#state.agents);
+		error -> State#state.agents
+	end,
+	{reply, ok, State#state{ agents = NAgents}};
+
 
 handle_call({send_command, Id, Command}, _From, State) ->
 	try 

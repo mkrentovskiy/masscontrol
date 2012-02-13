@@ -41,13 +41,18 @@ loop(Req, DocRoot) ->
 						I = proplists:get_value("id", Q),
 						R = ssha_control:del_node(I),						
 						Req:ok({"application/json", mochijson2:encode(R)});
-					"send_command" ->
+					"reconnect" ->
+						Q = Req:parse_qs(),						
+						I = proplists:get_value("id", Q),
+						R = ssha_control:reconnect(I),						
+						Req:ok({"application/json", mochijson2:encode(R)});
+					"command" ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),						
 						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(R))});
-					"add_to_git" ->
+					"git" ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
