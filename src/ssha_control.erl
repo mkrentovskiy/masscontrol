@@ -22,7 +22,7 @@ nodes_list_json() ->
 	NL = nodes_list(),	
 	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {title, list_to_binary(T)}]} || {node, I, H, U, T, _ } <- NL].
 
-send_command(Id, Command) -> gen_server:call(ssha_control, {send_command, Id, Command}, 60000).
+send_command(Id, Command) -> gen_server:call(ssha_control, {send_command, Id, Command}, 600000).
 
 
 init([]) -> 
