@@ -48,7 +48,7 @@ init([]) ->
     {ok, {Strategy, lists:flatten(Processes)}}.
 
 web_specs(Mod, Port) ->
-    WebConfig = [{ip, {0,0,0,0}},
+    WebConfig = [{ip, {127,0,0,1}},
                  {port, Port},
                  {docroot, mc_deps:local_path(["wwwroot"])}],
     {Mod,
