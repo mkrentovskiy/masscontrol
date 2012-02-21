@@ -59,6 +59,11 @@ loop(Req, DocRoot) ->
 						R = ssha_control:send_command(I, C),										
 						{ok, P} = add_to_git(I, C, R),
 						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(P))});
+					"ipsec" ->
+						Q = Req:parse_qs(),						
+						I = proplists:get_value("id", Q),
+						R = ssha_control:ipsec(I),										
+						Req:ok({"application/json", mochijson2:encode(R)});
                     _ ->
                         Req:serve_file(Path, DocRoot)
                 end;

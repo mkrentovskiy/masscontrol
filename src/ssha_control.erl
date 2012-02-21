@@ -4,8 +4,9 @@
 
 -include("mc.hrl").
 
--export([start/0, add_node/3, del_node/1, reconnect/1, nodes_list/0, nodes_list_json/0, send_command/2]).
+-export([start/0, add_node/3, del_node/1, reconnect/1, nodes_list/0, nodes_list_json/0, send_command/2, ipsec/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
+-export([test_parse_samgr/0]).
 
 -record(state, {nodes = [], agents = [] }).
 
@@ -23,6 +24,7 @@ nodes_list_json() ->
 	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {title, list_to_binary(T)}]} || {node, I, H, U, T, _ } <- NL].
 
 send_command(Id, Command) -> gen_server:call(ssha_control, {send_command, Id, Command}, 600000).
+ipsec(Id) -> gen_server:call(ssha_control, {ipsec, Id}, 600000).
 
 
 init([]) -> 
@@ -63,7 +65,6 @@ handle_call({reconnect, Id}, _From, State) ->
 	end,
 	{reply, ok, State#state{ agents = NAgents}};
 
-
 handle_call({send_command, Id, Command}, _From, State) ->
 	try 
 		case dict:find(Id, State#state.agents) of
@@ -83,7 +84,20 @@ handle_call({send_command, Id, Command}, _From, State) ->
 				{reply, R, State#state { agents = NAgents }}
 		end
 	catch 
-		E -> {reply, E, State}	
+		E -> {reply, E, State}
+	end;
+
+handle_call({ipsec, Id}, _From, State) ->
+	try 
+		case dict:find(Id, State#state.agents) of
+			{ok, A} ->
+				R = report_ipsec(A),
+				{reply, R, State};
+			error -> 
+				{reply, error, State}
+		end
+	catch 
+		E -> {reply, E, State}
 	end.
 
 handle_cast(Msg, State) -> {noreply, State}.
@@ -104,3 +118,27 @@ send(Agent, Command) ->
 	lists:foldl(fun(I, A) -> A ++ "\n" ++ I end, [], R).
 
 close(Agent) -> ssha:close(Agent).
+
+report_ipsec(Agent) -> 
+	{ok, R} = ssha:send(Agent, "sa_mgr show -detial"),
+	parse_samgr(R).
+
+parse_samgr(R) ->
+	{{LoType, LoId, LoBlock}, A} = lists:foldl(fun(I, {{Type, Id, Block}, A}) -> 
+			case re:run(I, "^(ISAKMP|IPsec) connection id: ([0-9]*).*$", [{capture, all_but_first, list}]) of 
+				{match, [NType, NId]} -> 
+					case Type =/= undefine of 
+						true -> {{NType, NId, ""}, A ++ [{Type, Id, Block}]};
+						false -> {{NType, NId, ""}, A}
+					end;
+				_ -> {{Type, Id, Block ++ I}, A}
+			end
+		end, {{undefine, "0", ""}, []}, R),
+	case LoType =/= undefine of true -> AR = A ++ [{LoType, LoId, LoBlock}]; false -> AR = A end,
+	io:format("AR: ~p~n", [AR]).
+
+test_parse_samgr() ->
+	{ok, D} = file:read_file("test"),
+	R = re:split(D, "\n"),
+	RL = lists:map(fun(I) -> binary_to_list(I) end, R),
+	parse_samgr(RL).
