@@ -28,7 +28,7 @@
 		if(confirm("Are you sure?")) {
 			$.getJSON("/del_node", "id=" + id, function(d) { 
 					$("#t_" + id2eid(id)).detach(); 
-					$("#p_" + id2eid(id)).detach(); 
+					$("#" + id2eid(id)).detach(); 
 					$('#tabs a:last').tab('show');
 				});
 		}	
@@ -42,21 +42,22 @@
 	$.mc.exec = function(id) {
 		var p = $("#command_" + id2eid(id)).val();
 		if(p && p.length > 0) {
-			exec("command", id, p, "info", null);
+			exec("command", id, p, "info", function(d) { return strip(d); });
 		}
 	}
 	$.mc.git = function(id) {
 		var p = $("#command_" + id2eid(id)).val();
 		if(p && p.length > 0) {
-			exec("git", id, p, "info", null);
+			exec("git", id, p, "info", function(d) { return strip(d); });
 		}
 	}
 	$.mc.execme = function(id, c) {
-		exec("command", id, c, "info", null);
+		exec("command", id, c, "info", function(d) { return strip(d); });
 	}
 	$.mc.shall = function(id) {
-		exec("ipsec", id, "", "info", function(d) { 
-				return d; 
+		exec("ipsec", id, "", "info", function(d) {
+				r = $.tmpl($("#_t_shall").html(), {"d": d});
+				return r;    
 			});
 	}
 	
@@ -92,7 +93,7 @@
 		$(eid).html($("#_loading").html());
 		$.getJSON("/" + cmd + "?id=" + id + "&c=" + escape(c), function(d) { 
 				if(cb) d = cb(d); 
-				$(eid).html("<span class='c'>" + c + "</span>"  + strip(d));
+				$(eid).html("<span class='c'>" + c + "</span>"  + d);
 			});
 	}
 	
@@ -103,7 +104,7 @@
 		$('#_alert').modal(); 
 	}
 	
-	function id2eid(id) { return id.replace(".", "_", "g"); }
+	function id2eid(id) { return id.replace(/\./g, "_"); }
 	
 	function strip(text) {
 		if(text) {

@@ -125,19 +125,19 @@ report_ipsec(Agent) ->
 
 parse_samgr(R) ->
 	[LoType, LoId, LoBlock, A] = lists:foldl(fun(I, [Type, Id, Block, A]) -> 
-			case re:run(I, "^(ISAKMP|IPsec) connection id: ([0-9]*).*$", [{capture, all_but_first, list}]) of 
+			case re:run(I, "^(ISAKMP|IPsec) connection id: ([0-9]*).*$", [{capture, all_but_first, binary}]) of 
 				{match, [NType, NId]} -> 
 					case Type =/= undefine of 
-						true -> [NType, NId, [], A ++ [[Type, Id, Block]]];
-						false -> [NType, NId, [], A]
+						true -> 
+							[NType, NId, [], A ++ [[Type, Id, Block]]];
+						false -> 
+							[NType, NId, [], A]
 					end;
 				_ ->
 					Inf = re:replace(I, "^[ ]{1,7}sa[ |:]?(limits:|timing:)?[ ]{0,2}", "", [{return,list}]),										
 					In = re:replace(Inf, ", remote crypto endpt", ": remote crypto endpt", [{return,list}]),
 					Pars = parse_sa_params(re:split(In, ": ")),
-					BType = list_to_binary(Type),
-					BId = list_to_binary(Id),
-					[BType, BId, Block ++ Pars, A]
+					[Type, Id, Block ++ Pars, A]
 			end
 		end, [undefine, "0", [], []], R),
 	case LoType =/= undefine of true -> A ++ [[LoType, LoId, LoBlock]]; false -> A end.
@@ -146,7 +146,7 @@ parse_sa_params([K, V | L]) ->
 	KL = binary_to_list(K),
 	case length(KL)>0 of
 		true ->
-			NK = list_to_binary(re:replace(KL, "^[ |\t]{1,10}", "", [{return,list}])), 
+			NK = re:replace(KL, "^[ |\t]{1,10}", "", [{return,binary}]), 
 			NV = esc_sa_value(V),
 			[{NK, NV}] ++ parse_sa_params(L);
 		false -> parse_sa_params([V|L])

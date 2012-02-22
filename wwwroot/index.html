@@ -35,11 +35,11 @@
 		
 	<div class="no">
 		<script type="text/x-jquery-tmpl" id="_t_tab">
-			<li id="t_${eid}"><a href="#p_${eid}" data-toggle="tab">${title}</a></li>
+			<li id="t_${eid}"><a href="#${eid}" data-toggle="tab">${title}</a></li>
 		</script>
 		
 		<script type="text/x-jquery-tmpl" id="_t_pad">
-			<div class="tab-pane" id="p_${eid}">
+			<div class="tab-pane" id="${eid}">
 				<h2>${title}</h2>
 				<div class="row">
 					<div class="span8">
@@ -67,8 +67,15 @@
 			</div>
 		</script>
 		
-		<script type="text/x-jquery-tmpl" id="_t_ipsec">
-		
+		<script type="text/x-jquery-tmpl" id="_t_shall">
+			<table class="table">
+				{{each(i, di) d}}
+					<tr>
+						<td>${di[0]}</td>	
+						<td>${di[1]}</td>	
+					</tr>
+				{{/each}}
+			</table>
 		</script>
 	</div>
 	
