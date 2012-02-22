@@ -51,14 +51,14 @@ loop(Req, DocRoot) ->
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),						
-						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(R))});
+						Req:ok({"application/json", mochijson2:encode(R)});
 					"git" ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),										
 						{ok, P} = add_to_git(I, C, R),
-						Req:ok({"application/json", mochijson2:encode(unicode:characters_to_binary(P))});
+						Req:ok({"application/json", mochijson2:encode(P)});
 					"ipsec" ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),

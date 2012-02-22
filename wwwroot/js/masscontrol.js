@@ -55,7 +55,9 @@
 		exec("command", id, c, "info", null);
 	}
 	$.mc.shall = function(id) {
-		exec("ipsec", id, "", "info", function(d) { return d; });
+		exec("ipsec", id, "", "info", function(d) { 
+				return d; 
+			});
 	}
 	
 	
