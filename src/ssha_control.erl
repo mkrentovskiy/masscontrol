@@ -134,8 +134,10 @@ parse_samgr(R) ->
 				_ ->
 					Inf = re:replace(I, "^[ ]{1,7}sa[ |:]?(limits:|timing:)?[ ]{0,2}", "", [{return,list}]),										
 					In = re:replace(Inf, ", remote crypto endpt", ": remote crypto endpt", [{return,list}]),
-					Pars = parse_sa_params(re:split(In, ": ")),					 
-					[Type, Id, Block ++ Pars, A]
+					Pars = parse_sa_params(re:split(In, ": ")),
+					BType = list_to_binary(Type),
+					BId = list_to_binary(Id),
+					[BType, BId, Block ++ Pars, A]
 			end
 		end, [undefine, "0", [], []], R),
 	case LoType =/= undefine of true -> A ++ [[LoType, LoId, LoBlock]]; false -> A end.
