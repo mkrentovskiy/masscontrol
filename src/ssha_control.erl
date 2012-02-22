@@ -120,7 +120,7 @@ send(Agent, Command) ->
 close(Agent) -> ssha:close(Agent).
 
 report_ipsec(Agent) -> 
-	{ok, R} = ssha:send(Agent, "sa_mgr show -detial"),
+	{ok, R} = ssha:send(Agent, "sa_mgr show -detail"),
 	parse_samgr(R).
 
 parse_samgr(R) ->
