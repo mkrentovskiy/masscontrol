@@ -63,7 +63,7 @@ loop(Req, DocRoot) ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),
 						R = ssha_control:ipsec(I),										
-						Req:ok({"application/json", mochijson2:encode(list_to_binary(R))});
+						Req:ok({"application/json", mochijson2:encode(R)});
                     _ ->
                         Req:serve_file(Path, DocRoot)
                 end;
