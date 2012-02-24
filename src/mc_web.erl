@@ -27,7 +27,7 @@ loop(Req, DocRoot) ->
             Method when Method =:= 'GET'; Method =:= 'HEAD' ->
                 case Path of
 					"nodes_list" ->
-						HL = ssha_control:nodes_list_json(),
+						HL = ssha_control:nodes_list(),
 						Req:ok({"application/json", mochijson2:encode(HL)});
 					"add_node" ->
 						Q = Req:parse_qs(),						
@@ -51,14 +51,14 @@ loop(Req, DocRoot) ->
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),						
-						Req:ok({"application/json", mochijson2:encode(list_to_binary(R))});
+						Req:ok({"application/json", mochijson2:encode(R)});
 					"git" ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),
 						C = proplists:get_value("c", Q),
 						R = ssha_control:send_command(I, C),										
 						{ok, P} = add_to_git(I, C, R),
-						Req:ok({"application/json", mochijson2:encode(list_to_binary(P))});
+						Req:ok({"application/json", mochijson2:encode(P)});
 					"ipsec" ->
 						Q = Req:parse_qs(),						
 						I = proplists:get_value("id", Q),

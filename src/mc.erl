@@ -20,7 +20,8 @@ start() ->
     mc_deps:ensure(),
     ensure_started(crypto),
     ensure_started(ssh),
-	ensure_started(mnesia),
+    ensure_started(mnesia),
+    ensure_started(gproc),
     application:start(mc).
 
 

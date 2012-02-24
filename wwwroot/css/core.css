@@ -4,8 +4,9 @@ body { padding-top: 10px; }
 .a { cursor: pointer; color: #006; border-bottom: dotted #090 1px; padding: 1px 4px; }
 .a:hover { cursor: pointer; color: #006; border-bottom: solid #090 1px; background: #CDE4EB }
 
-.h { padding: 0 20px; }
+.h { padding: 20px 15px; }
 .load { text-align: center; }
+.comm { padding: 5px 0 10px 0; }
 
 .c { color: #006; }
 div.ro { font-family: Courier, fixed; font-size: 13px; line-height: 18px; color: #030; overflow: auto; 

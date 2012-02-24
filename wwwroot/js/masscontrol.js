@@ -56,8 +56,12 @@
 	}
 	$.mc.shall = function(id) {
 		exec("ipsec", id, "", "info", function(d) {
-				r = $.tmpl($("#_t_shall").html(), {"d": d});
-				return r;    
+				if(d == "error") {
+					alertMe("Error!", "There are some troubles to get sa_mgr info.");
+				} else {
+					$("#_t_shall").tmpl({"d": d}).appendTo("#info_" + id2eid(id));
+					return null;
+				}
 			});
 	}
 	
@@ -76,16 +80,8 @@
 		v.eid = id2eid(v.id);
 		$("#tabs").append($.tmpl($("#_t_tab").html(), v));
 		$("#pads").append($.tmpl($("#_t_pad").html(), v));
-		updateSysInfo(v);
 	}
 	
-	function updateSysInfo(v) {
-		exec("command", v.id, "uname -a;uptime", "sysinfo", function(d) {
-				if($("#sysinfo_" + v.eid) && $("#sysinfo_" + v.eid).length > 0) 
-					setTimeout("updateSysInfo(v)", 600000);
-				return d;
-			});
-	}
 	
 	function exec(cmd, id, c, pref, cb) {
 		var eid = "#" + pref + "_" + id2eid(id);
@@ -93,7 +89,7 @@
 		$(eid).html($("#_loading").html());
 		$.getJSON("/" + cmd + "?id=" + id + "&c=" + escape(c), function(d) { 
 				if(cb) d = cb(d); 
-				$(eid).html("<span class='c'>" + c + "</span>"  + d);
+				if(d) $(eid).html(d);
 			});
 	}
 	
@@ -108,7 +104,7 @@
 	
 	function strip(text) {
 		if(text) {
-			var a = [["&", "&amp;"], ["<", "&lt;"], [">", "&gt;"],  ["\n", "<br/>"],
+			var a = [["&", "&amp;"], ["<", "&lt;"], [">", "&gt;"],  ["\r\n", "<br/>"],
 				["\t", "&nbsp;&nbsp;&nbsp;&nbsp;"], [" ", "&nbsp;"]];
 			$(a).each(function(i, v) { var r = new RegExp(v[0], "g"); text = text.replace(r, v[1]); })
 		}

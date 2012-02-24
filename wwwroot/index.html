@@ -40,28 +40,28 @@
 		
 		<script type="text/x-jquery-tmpl" id="_t_pad">
 			<div class="tab-pane" id="${eid}">
-				<h2>${title}</h2>
 				<div class="row">
-					<div class="span8">
-						<div class="alert alert-info" id="sysinfo_${eid}"></div>
-						<div class="ro" id="info_${eid}"></div>
-					</div>
 					<div class="span4">
+						<h2>${title}</h2>
 						<div class="well">
 							<ul class="nav nav-list">
 	  							<li><a href="#" onclick="$.mc.reconnect('${id}')"><i class="icon-repeat"></i> Reconnect</a></li>
 	  							<li class="nav-header">Command</li>
-	  							<li><input type="text" id="command_${eid}" placeholder="Command line"/></li>
-	  							<li><a href="#" onclick="$.mc.exec('${id}')"><i class="icon-cog"></i> Execute</a></li>
+	  							<div class="comm">
+	  								<input type="text" id="command_${eid}" placeholder="Command line" class="span3"/>
+	  								<a href="#" onclick="$.mc.exec('${id}')" class="btn btn-info">Exec</a>
+	 							</div>
 	 							<li><a href="#" onclick="$.mc.git('${id}')"><i class="icon-magnet"></i> Copy output to git</a></li>
-	 							<li class="nav-header">Real-time status</li>
-	 							<li><a href="#" onclick="$.mc.ps('${id}')"><i class="icon-list"></i> Processes</a></li>
+	 							<li class="nav-header">Spice</li>
 	 							<li><a href="#" onclick="$.mc.shall('${id}')"><i class="icon-lock"></i> ISAKMP/IPSec</a></li>
 							</ul>
+							<div class="h">
+								<a class="btn btn-danger" onclick="$.mc.del('${id}')">Delete</a>
+							</div>
 						</div>
-						<div class="h">
-							<a class="btn btn-danger" onclick="$.mc.del('${id}')">Delete</a>
-						</div>
+					</div>
+					<div class="span8">
+						<div class="ro" id="info_${eid}"></div>
 					</div>
 				</div>
 			</div>

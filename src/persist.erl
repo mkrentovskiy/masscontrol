@@ -3,7 +3,7 @@
 -include("mc.hrl").
 -include_lib("stdlib/include/qlc.hrl").
 
--export([init/0, add_node/1, del_node/1, nodes_list/0]).
+-export([init/0, add_node/1, del_node/1, nodes_list/0, node_by_id/1]).
 
 init() -> 
 	mnesia:stop(),
@@ -26,3 +26,8 @@ nodes_list() ->
 		_ -> []
 	end.
 
+node_by_id(Id) ->
+	case mnesia:transaction(fun() -> mnesia:read({node, Id}) end) of
+		{atomic, [Node]} ->Node;
+		_ -> notfound
+	end.
