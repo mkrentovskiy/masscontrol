@@ -8,6 +8,11 @@ body { padding-top: 10px; }
 .load { text-align: center; }
 .comm { padding: 5px 0 10px 0; }
 
+.isakmp { color: #006; cursor: pointer; }
+.ipsec { color: #060; cursor: pointer; }
+td.s { font-size: 8pt; color: #999; }
+
+
 .c { color: #006; }
 div.ro { font-family: Courier, fixed; font-size: 13px; line-height: 18px; color: #030; overflow: auto; 
     padding: 0 10px; white-space: pre; }

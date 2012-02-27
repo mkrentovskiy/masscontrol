@@ -54,6 +54,9 @@
 	 							<li><a href="#" onclick="$.mc.git('${id}')"><i class="icon-magnet"></i> Copy output to git</a></li>
 	 							<li class="nav-header">Spice</li>
 	 							<li><a href="#" onclick="$.mc.shall('${id}')"><i class="icon-lock"></i> ISAKMP/IPSec</a></li>
+	  							<div class="comm">
+	  								<a href="#" onclick="$.mc.execme('${id}', 'sa_mgr clear -all')" class="btn btn-warning">Clear all SC</a>
+	 							</div>
 							</ul>
 							<div class="h">
 								<a class="btn btn-danger" onclick="$.mc.del('${id}')">Delete</a>
@@ -70,12 +73,26 @@
 		<script type="text/x-jquery-tmpl" id="_t_shall">
 			<table class="table">
 				{{each(i, di) d}}
-					<tr>
-						<td>${di[0]}</td>	
-						<td>${di[1]}</td>	
+					<tr class="${di[0].toLowerCase()}" onclick="$.mc.a('${di[0]} #${di[1]}', $('#mi_${di[1]}').html())">
+						<td>${di[2]["remote peer (addr/port)"]}${di[2]["remote crypto endpt."]}</td>
+						<td>${di[2]["remote identity (DN)"]}</td>
 					</tr>
+					</div>
 				{{/each}}
 			</table>
+			
+			{{each(i, di) d}}
+				<div class="no" id="mi_${di[1]}">
+					<table class="table">
+						{{each(ip, p) di[2]}}
+							<tr><td class="s">${ip}</td><td>${p}</td></tr>
+						{{/each}}
+					</table>
+					<div class="well">
+					    <a class="btn btn-warning" onclick="$.mc.execme('${id}', 'sa_mgr clear -${di[0].toLowerCase()} -i ${di[1]}');">Clear</a>
+					</div>
+				</div>
+			{{/each}}
 		</script>
 	</div>
 	

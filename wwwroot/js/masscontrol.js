@@ -59,13 +59,15 @@
 				if(d == "error") {
 					alertMe("Error!", "There are some troubles to get sa_mgr info.");
 				} else {
-					$("#_t_shall").tmpl({"d": d}).appendTo("#info_" + id2eid(id));
+					var dst = "#info_" + id2eid(id);
+					$(dst).html("");
+					$("#_t_shall").tmpl({"id": id, "d": d}).appendTo(dst);
 					return null;
 				}
 			});
 	}
 	
-	
+	$.mc.a = function(h, v) { alertMe(h, v); }
 	
 	/* Local */
 	

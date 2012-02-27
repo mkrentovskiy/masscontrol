@@ -36,8 +36,9 @@ send_command(Id, Command) ->
 
 ipsec(Id) -> 
 	R = send(Id, "sa_mgr show -detail"),
-	parse_samgr(R).
-
+	RL = lists:foldl(fun(I, A) -> <<A/binary, I/binary>> end, <<>>, R),
+	RLN = re:split(RL, "\n"),
+	parse_samgr(RLN).
 
 %%% Internal functions
 
@@ -57,10 +58,10 @@ send(Id, Command) ->
 		undefined -> 
 			Node = persist:node_by_id(Id),
 			Pid = connect(Node),
-			{ok, R} = ssha:send(Pid, Command),
+			{ok, R} = ssha:exec(Pid, Command),
 			R;
 		Pid  -> 
-			{ok, R} = ssha:send(Pid, Command),
+			{ok, R} = ssha:exec(Pid, Command),
 			R
 	end.
 
