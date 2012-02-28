@@ -14,7 +14,8 @@
 							id: $("#ahf_u").val() + "." + $("#ahf_h").val(), 
 							host: $("#ahf_h").val(),
 							user: $("#ahf_u").val(),
-							title: $("#ahf_t").val()
+							title: $("#ahf_t").val(),
+							type: $("#ahf_v").val()
 						});
 					$("#ahf").clearForm();
 				} else {
@@ -81,7 +82,7 @@
 	function addNode(v) { 
 		v.eid = id2eid(v.id);
 		$("#tabs").append($.tmpl($("#_t_tab").html(), v));
-		$("#pads").append($.tmpl($("#_t_pad").html(), v));
+		$("#pads").append($.tmpl($("#_t_pad_" + v.type).html(), v));
 	}
 	
 	

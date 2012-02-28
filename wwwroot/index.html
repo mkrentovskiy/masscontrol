@@ -21,10 +21,15 @@
 <body>
 	<div class="container">
 			<form action="#" id="ahf" onsubmit="return false;" class="well form-search">
-				<input name="u" id="ahf_u" size="10" type="text" vmethod="pattern" vparam="string" placeholder="User"/>
+				<input name="u" id="ahf_u" size="10" type="text" vmethod="pattern" vparam="string" placeholder="User" class="span2"/>
 				@
 				<input name="h" id="ahf_h" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Host"/>
 				as
+				<select size="1" id="ahf_v" name="v" class="span2">
+					<option>linux</option>
+					<option>s-terra</option>
+					<option>cisco</option>
+				</select>
 				<input id="ahf_t" name="t" size="30" type="text" vmethod="pattern" vparam="string" placeholder="Title" />
 				<button class="btn btn-success" onclick="$.mc.add();">Add</button>
 			</form>   
@@ -38,11 +43,38 @@
 			<li id="t_${eid}"><a href="#${eid}" data-toggle="tab">${title}</a></li>
 		</script>
 		
-		<script type="text/x-jquery-tmpl" id="_t_pad">
+		<script type="text/x-jquery-tmpl" id="_t_pad_linux">
 			<div class="tab-pane" id="${eid}">
 				<div class="row">
 					<div class="span4">
-						<h2>${title}</h2>
+						<h2>[Linux host] ${title}</h2>
+						<div class="well">
+							<ul class="nav nav-list">
+	  							<li><a href="#" onclick="$.mc.reconnect('${id}')"><i class="icon-repeat"></i> Reconnect</a></li>
+	  							<li class="nav-header">Command</li>
+	  							<div class="comm">
+	  								<input type="text" id="command_${eid}" placeholder="Command line" class="span3"/>
+	  								<a href="#" onclick="$.mc.exec('${id}')" class="btn btn-info">Exec</a>
+	 							</div>
+	 							<li><a href="#" onclick="$.mc.git('${id}')"><i class="icon-magnet"></i> Copy output to git</a></li>
+							</ul>
+							<div class="h">
+								<a class="btn btn-danger" onclick="$.mc.del('${id}')">Delete</a>
+							</div>
+						</div>
+					</div>
+					<div class="span8">
+						<div class="ro" id="info_${eid}"></div>
+					</div>
+				</div>
+			</div>
+		</script>
+
+		<script type="text/x-jquery-tmpl" id="_t_pad_s-terra">
+			<div class="tab-pane" id="${eid}">
+				<div class="row">
+					<div class="span4">
+						<h2>[S-Terra Gate] ${title}</h2>
 						<div class="well">
 							<ul class="nav nav-list">
 	  							<li><a href="#" onclick="$.mc.reconnect('${id}')"><i class="icon-repeat"></i> Reconnect</a></li>
@@ -69,7 +101,34 @@
 				</div>
 			</div>
 		</script>
-		
+
+		<script type="text/x-jquery-tmpl" id="_t_pad_cisco">
+			<div class="tab-pane" id="${eid}">
+				<div class="row">
+					<div class="span4">
+						<h2>[Cisco console] ${title}</h2>
+						<div class="well">
+							<ul class="nav nav-list">
+	  							<li class="nav-header">Command</li>
+	  							<div class="comm">
+	  								<input type="text" id="command_${eid}" placeholder="Command line" class="span3"/>
+	  								<a href="#" onclick="$.mc.exec('${id}')" class="btn btn-info">Exec</a>
+	 							</div>
+	 							<li><a href="#" onclick="$.mc.git('${id}')"><i class="icon-magnet"></i> Copy output to git</a></li>
+							</ul>
+							<div class="h">
+								<a class="btn btn-danger" onclick="$.mc.del('${id}')">Delete</a>
+							</div>
+						</div>
+					</div>
+					<div class="span8">
+						<div class="ro" id="info_${eid}"></div>
+					</div>
+				</div>
+			</div>
+		</script>
+
+
 		<script type="text/x-jquery-tmpl" id="_t_shall">
 			<table class="table">
 				{{each(i, di) d}}

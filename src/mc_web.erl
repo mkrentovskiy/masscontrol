@@ -34,7 +34,8 @@ loop(Req, DocRoot) ->
 						H = proplists:get_value("h", Q),
 						U = proplists:get_value("u", Q),
 						T = proplists:get_value("t", Q),
-						R = ssha_control:add_node(H, U, T),
+						V = proplists:get_value("v", Q),
+						R = ssha_control:add_node(H, U, T, V),
 						Req:ok({"application/json", mochijson2:encode(R)});
 					"del_node" ->
 						Q = Req:parse_qs(),						

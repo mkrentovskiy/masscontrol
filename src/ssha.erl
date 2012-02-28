@@ -1,6 +1,5 @@
 %% Author: Anton Krasovsky 
 
-
 -module(ssha).
 -behaviour(gen_fsm).
 
@@ -10,7 +9,7 @@
 -export([init/1, starting/3, reading_banner/2, guess_prompt1/2, guess_prompt2/2, guess_prompt3/2,
          ready/3, waiting/2, waiting_exec/2, handle_event/3, handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
 
--record(state, {connection, prompt, prompt1, prompt2, prompt3, channel, replyto, received, command, id}).
+-record(state, {connection, prompt, prompt1, prompt2, prompt3, channel, replyto, received, command}).
 
 start(Sid) -> gen_fsm:start(?MODULE, [Sid], []).
 connect(FsmRef, Host, User, Password) -> gen_fsm:sync_send_event(FsmRef, {connect, Host, User, Password}, ?TIMEOUT). 
@@ -21,7 +20,7 @@ close(FsmRef) -> gen_fsm:send_all_state_event(FsmRef, close).
 %% Server functions
 init([Sid]) ->
     gproc:add_local_name(Sid),
-    {ok, starting, #state{prompt1 = [], prompt2 = [], prompt3 = [], received = [], command = [], id = Sid}}.
+    {ok, starting, #state{prompt1 = [], prompt2 = [], prompt3 = [], received = [], command = []}}.
 
 reading_banner(timeout, StateData) ->
     send_cr(StateData),
@@ -75,7 +74,7 @@ starting({connect, Host, User, Password}, From, StateData) ->
                                  {password, Password},
                                  {timeout, ?TIMEOUT}]) of
 		{ok, Connection} ->
-			{ok, Channel} = ssh_connection:session_channel(Connection, ?TIMEOUT),
+			{ok, Channel} = ssh_connection:session_channel(Connection, ?WINDOW_SIZE, ?PACKET_SIZE, ?TIMEOUT),
 			success = ssh_connection:open_pty(Connection, Channel, "dumb", ?TERM_WIDTH, ?TERM_HEIGHT, [], ?TIMEOUT),
 			ok = ssh_connection:shell(Connection, Channel),
 			{next_state, reading_banner, StateData#state{connection=Connection, channel=Channel, replyto=From}};
@@ -99,7 +98,7 @@ handle_sync_event(_Event, _From, StateName, StateData) ->
     {reply, ok, StateName, StateData}.
 
 handle_info(Info, starting, StateData) ->
-    ?LOG("starting info: ~p~n", [Info]),
+    %%?LOG("starting info: ~p~n", [Info]),
     {next_state, starting, StateData};
 
 handle_info(Info, reading_banner, StateData) ->
@@ -108,26 +107,26 @@ handle_info(Info, reading_banner, StateData) ->
   
 handle_info(Info, guess_prompt1, StateData) ->
     {ssh_cm, _ConnectionRef, {data, _ChannelId, _Type, Data}} = Info,
-    ?LOG("guess prompt1: ~p~n", [Data]),
+    %%?LOG("guess prompt1: ~p~n", [Data]),
     {next_state, guess_prompt1, StateData#state{prompt1=[Data | StateData#state.prompt1]}, ?PROMPT_TIMEOUT};
 
 handle_info(Info, guess_prompt2, StateData) ->
     {ssh_cm, _ConnectionRef, {data, _ChannelId, _Type, Data}} = Info,
-    ?LOG("guess prompt2: ~p~n", [Data]),
+    %%?LOG("guess prompt2: ~p~n", [Data]),
     {next_state, guess_prompt2, StateData#state{prompt2=[Data | StateData#state.prompt2]}, ?PROMPT_TIMEOUT};
 
 handle_info(Info, guess_prompt3, StateData) ->
     {ssh_cm, _ConnectionRef, {data, _ChannelId, _Type, Data}} = Info,
-    ?LOG("guess prompt3: ~p~n", [Data]),
+    %%?LOG("guess prompt3: ~p~n", [Data]),
     {next_state, guess_prompt3, StateData#state{prompt3=[Data | StateData#state.prompt3]}, ?PROMPT_TIMEOUT};
 
 handle_info(Info, ready, StateData) ->
 	case Info of
 		{ssh_cm, _ConnectionRef, {data, _ChannelId, _Type, Data}} ->
-			?LOG("ready: ~p~n", [Data]),
+			%%?LOG("ready: ~p~n", [Data]),
 			{next_state, guess_prompt3, StateData#state{prompt3=[Data | StateData#state.prompt3]}, ?COMMAND_TIMEOUT};
 		I -> 
-			?LOG("unmatched: ~p~n", [I]),
+			%%?LOG("unmatched: ~p~n", [I]),
 			{next_state, ready, StateData, ?COMMAND_TIMEOUT}
 	end;
 
@@ -136,7 +135,7 @@ handle_info(Info, waiting, StateData) ->
 
 	LData = binary_to_list(Data),	
 	Received = StateData#state.received ++ [Data],
-	?LOG("send data: ~p ~n", [Data]),	
+	%%?LOG("send data: ~p ~n", [Data]),	
 	case string:str(LData, StateData#state.prompt) of
 		0 ->
 			% no prompt wait some more
@@ -147,7 +146,7 @@ handle_info(Info, waiting, StateData) ->
 	end;
 
 handle_info(Info, waiting_exec, StateData) ->
-	io:format("+I: ~p ~n", [Info]),	
+	%%?LOG("exec data: ~p ~n", [Info]),	
 	case Info of 
 		{ssh_cm, _ConnectionRef, {data, _ChannelId, _Type, Data}} ->
 			Received = StateData#state.received ++ [Data],
@@ -161,11 +160,10 @@ handle_info(Info, waiting_exec, StateData) ->
 	end;
 	
 handle_info(Info, StateName, StateData) ->
-    ?LOG("unknown info: ~p~n", [Info]),
+    %%?LOG("unknown info: ~p~n", [Info]),
     {next_state, StateName, StateData}.
 
 terminate(_Reason, _StateName, StateData) ->
-    %% gproc:unregister_name(StateData#state.id),
     ssh:close(StateData#state.connection),
     ok.
 
@@ -175,7 +173,6 @@ code_change(_OldVsn, StateName, StateData, _Extra) ->
 %%% Internal functions
 
 send_cmd(StateData, Cmd) -> 
-	io:format("+S: ~p ~p ~n", [StateData, Cmd]),
 	ssh_connection:send(StateData#state.connection, StateData#state.channel, Cmd ++ "\n").
 send_cr(StateData) -> ssh_connection:send(StateData#state.connection, StateData#state.channel, "\n").
 exec_cmd(StateData, Cmd) ->

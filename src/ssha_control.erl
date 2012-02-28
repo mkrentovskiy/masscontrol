@@ -2,11 +2,11 @@
 
 -include("mc.hrl").
 
--export([add_node/3, del_node/1, reconnect/1, nodes_list/0, send_command/2, ipsec/1]).
+-export([add_node/4, del_node/1, reconnect/1, nodes_list/0, send_command/2, ipsec/1]).
 -export([test_parse_samgr/0]).
 
-add_node(Host, User, Title) ->	
-	Node = #node{ id = User ++ "#" ++ Host, host = Host, user = User, title = Title},
+add_node(Host, User, Title, Type) ->	
+	Node = #node{ id = User ++ "." ++ Host, host = Host, user = User, title = Title, type = Type},
 	try 
 		persist:add_node(Node),
 		connect(Node),
@@ -28,14 +28,14 @@ reconnect(Id) ->
 
 nodes_list() -> 
 	NL = persist:nodes_list(),
-	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {title, list_to_binary(T)}]} || {node, I, H, U, T, _ } <- NL].
+	[{struct, [{id, list_to_binary(I)}, {host, list_to_binary(H)}, {user, list_to_binary(U)}, {title, list_to_binary(T)}, {type, list_to_binary(V)}]}  || {node, I, H, U, T, V } <- NL].
 
 send_command(Id, Command) -> 
-	R = send(Id, Command),
+	R = send(Id, Command, fun(P,C)-> ssha:send(P,C) end),
 	lists:foldl(fun(I, A) -> <<A/binary, I/binary>> end, <<>>, R).
 
 ipsec(Id) -> 
-	R = send(Id, "sa_mgr show -detail"),
+	R = send(Id, "sa_mgr show -detail", fun(P,C)-> ssha:exec(P,C) end),
 	RL = lists:foldl(fun(I, A) -> <<A/binary, I/binary>> end, <<>>, R),
 	RLN = re:split(RL, "\n"),
 	parse_samgr(RLN).
@@ -53,15 +53,15 @@ close(Id) ->
 		Pid -> ssha:close(Pid)
 	end.
 
-send(Id, Command) ->
+send(Id, Command, Fun) ->
 	case gproc:lookup_local_name(Id) of 
 		undefined -> 
 			Node = persist:node_by_id(Id),
 			Pid = connect(Node),
-			{ok, R} = ssha:exec(Pid, Command),
+			{ok, R} = Fun(Pid, Command),
 			R;
 		Pid  -> 
-			{ok, R} = ssha:exec(Pid, Command),
+			{ok, R} = Fun(Pid, Command),
 			R
 	end.
 
